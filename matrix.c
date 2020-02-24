@@ -22,6 +22,16 @@ print the matrix such that it looks like
 the template in the top comment
 */
 void print_matrix(struct matrix *m) {
+	int i, j;
+	printf("[\n");
+	for(i = 0; i < m->rows; i++) {
+		printf("\t[ ");
+		for(j = 0; j < m->cols; j++) {
+			printf("%f ", m->m[i][j]);
+		}
+		printf("]\n");
+	}
+	printf("]\n");
 }
 
 /*-------------- void ident() --------------
@@ -30,6 +40,14 @@ Inputs:  struct matrix *m <-- assumes m is a square matrix
 turns m in to an identity matrix
 */
 void ident(struct matrix *m) {
+	int i, j;
+	m = new_matrix(4, 3);
+	for(i = 0; i < m->rows; i++)
+		for(j = 0; j < m->lastcol; j++)
+			m->m[i][j] = 0;
+	m->m[0][0] = 1;
+	m->m[1][1] = 1;
+	m->m[2][2] = 1;
 }
 
 
