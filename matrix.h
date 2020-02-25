@@ -18,5 +18,8 @@ void print_matrix(struct matrix *m);
 void ident(struct matrix *m);
 void matrix_mult(struct matrix *a, struct matrix *b);
 void matrix_multr(struct matrix *a, struct matrix *b);
+void matrix_multrh(struct matrix *a, struct matrix *b, int a_start, int b_start,
+                   int a_end, int b_end);
+int max(int a, int b);
 
 #endif

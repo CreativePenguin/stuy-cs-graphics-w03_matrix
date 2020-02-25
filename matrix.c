@@ -60,8 +60,8 @@ a*b -> b
 */
 void matrix_mult(struct matrix *a, struct matrix *b) {
 	int i, j, k, max_col;
-	int max_col = max(a->lastcol, b->lastcol);
-	struct matrix *tmp = new_matrix(4, max_col);
+	/* max_col = max(a->lastcol, b->lastcol); */
+	struct matrix *tmp = new_matrix(4, a->lastcol);
 	for(i = 0; i < tmp->rows; i++) {
 		for(j = 0; j < tmp->lastcol; j++) {
 			tmp->m[i][j] = 0;
@@ -75,11 +75,15 @@ void matrix_mult(struct matrix *a, struct matrix *b) {
 }
 
 void matrix_multr(struct matrix *a, struct matrix *b) {
-	matrix_multrh(a, b, a->lastcol, b->lastcol);
+	matrix_multrh(a, b, 0, 0, a->lastcol, b->lastcol);
 }
 
-void matrix_multrh(struct matrix *a, struct matrix *b, int a_len, int b_len) {
-
+void matrix_multrh(struct matrix *a, struct matrix *b, int a_start, int b_start,
+                   int a_end, int b_end) {
+	if(a_start + 2 >= a_end && b_start + 2 >= b_end) {
+		matrix_multrh(a, b, 0, 0, a_end / 2, b_end / 2);
+		matrix_multrh(a, b, a_end / 2 + 1, b_end / 2 + 1, a_end, b_end);
+	}
 }
 
 int max(int a, int b) {
@@ -139,8 +143,8 @@ void free_matrix(struct matrix *m) {
 
 /*======== void grow_matrix() ==========
 Inputs:  struct matrix *m
-         int newcols 
-Returns: 
+         int newcols
+Returns:
 
 Reallocates the memory for m->m such that it now has
 newcols number of collumns
@@ -157,14 +161,16 @@ void grow_matrix(struct matrix *m, int newcols) {
 
 /*-------------- void copy_matrix() --------------
 Inputs:  struct matrix *a
-         struct matrix *b 
-Returns: 
+         struct matrix *b
+Returns:
 
 copy matrix a to matrix b
  */
 void copy_matrix(struct matrix *a, struct matrix *b) {
 
 	int r, c;
+
+  if(b->lastcol < a->lastcol) grow_matrix(b, a->lastcol);
 
 	for (r=0; r < a->rows; r++)
 		for (c=0; c < a->cols; c++)
