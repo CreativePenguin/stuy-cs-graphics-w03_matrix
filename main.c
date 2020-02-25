@@ -14,5 +14,5 @@ int main() {
 
   edges = new_matrix(4, 4);
 
-  free_matrix( edges );
+  free_matrix(edges);
 }  
