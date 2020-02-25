@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ml6.h"
 #include "display.h"
 #include "draw.h"
 #include "matrix.h"
+#include "ml6.h"
 
 int main() {
 
@@ -13,6 +13,7 @@ int main() {
   struct matrix *edges;
 
   edges = new_matrix(4, 4);
+  print_matrix(edges);
 
   free_matrix(edges);
-}  
+}

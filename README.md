@@ -1,6 +1,4 @@
 # stuy-cs-graphics-w03_matrix
-
-
 Due: Monday 02/24 8:00am  
 GitHub link: https://github.com/mks66/matrix.git
 
