@@ -71,16 +71,14 @@ a*b -> b
 void matrix_mult(struct matrix *a, struct matrix *b) {
   int i, j, k, max_col;
   /* max_col = max(a->lastcol, b->lastcol); */
-  struct matrix *tmp = new_matrix(4, a->lastcol);
-  for (i = 0; i < tmp->rows; i++) {
-    for (j = 0; j < tmp->lastcol; j++) {
-      tmp->m[i][j] = 0;
-      for (k = 0; k < sizeof(a->m) / sizeof(a->m[0]); k++) {
-        tmp->m[i][j] += a->m[k][j] * b->m[i][k];
-      }
+  struct matrix *tmp;
+  copy_matrix(b, tmp);
+  for (i = 0; i < b->rows; i++) {
+    for (j = 0; j < 4; j++) {
+      b[i][j] = (a[0][j] * tmp[i][0] + a[1][j] * tmp[i][1] +
+                 a[2][j] * tmp[i][2] + a[3][j] * tmp[i][3]);
     }
   }
-  copy_matrix(tmp, b);
   free_matrix(tmp);
 }
 
