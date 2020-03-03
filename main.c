@@ -13,7 +13,10 @@ int main() {
   struct matrix *edges;
 
   edges = new_matrix(4, 4);
+  double edges_x[4] = {120, 41, 9, 6};
+  matrix_vals_row(edges, 0, edges_x);
   print_matrix(edges);
+  /* matrix_vals(edges, 0, edges_m); */
 
   free_matrix(edges);
 }

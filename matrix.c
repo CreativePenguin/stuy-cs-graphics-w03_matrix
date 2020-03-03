@@ -9,6 +9,7 @@
   ==========================================*/
 
 #include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -38,18 +39,27 @@ Inputs:  struct matrix *m <-- assumes m is a square matrix
 
 turns m in to an identity matrix
 */
-void ident(struct matrix *m) { identn(m, 1); }
-
-void identn(struct matrix *m, int factor) {
+void ident(struct matrix *m) {
   int i, j;
-  m = new_matrix(4, 3);
-  for (i = 0; i < m->rows; i++)
-    for (j = 0; j < m->lastcol; j++)
-      m->m[i][j] = 0;
-  m->m[0][0] = factor;
-  m->m[1][1] = factor;
-  m->m[2][2] = factor;
+  for (i = 0; i < m->lastcol; i++) {
+    for (j = 0; j < m->lastcol; j++) {
+      m->m[i][j] = i == j ? 1 : 0;
+    }
+  }
 }
+
+struct matrix *identn(int size) {
+  int i;
+  struct matrix *m = new_matrix(size, size);
+  for (i = 0; i < size; i++) {
+    m->m[i][i] = 1;
+  }
+  return m;
+}
+
+/* void tident(struct matrix *m) { tidentn(m, 1); } */
+
+/* void tidentn(struct matrix *m, int factor) { *m = identn(factor); } */
 
 /*-------------- void matrix_mult() --------------
 Inputs:  struct matrix *a
@@ -59,34 +69,50 @@ multiply a by b, modifying b to be the product
 a*b -> b
 */
 void matrix_mult(struct matrix *a, struct matrix *b) {
-	int i, j, k, max_col;
-	/* max_col = max(a->lastcol, b->lastcol); */
-	struct matrix *tmp = new_matrix(4, a->lastcol);
-	for(i = 0; i < tmp->rows; i++) {
-		for(j = 0; j < tmp->lastcol; j++) {
-			tmp->m[i][j] = 0;
-			for(k = 0; k < sizeof(a->m) / sizeof(a->m[0]); k++) {
-				tmp->m[i][j] += a->m[k][j] * b->m[i][k];
-			}
-		}
-	}
-	copy_matrix(tmp, b);
-	free_matrix(tmp);
+  int i, j, k, max_col;
+  /* max_col = max(a->lastcol, b->lastcol); */
+  struct matrix *tmp = new_matrix(4, a->lastcol);
+  for (i = 0; i < tmp->rows; i++) {
+    for (j = 0; j < tmp->lastcol; j++) {
+      tmp->m[i][j] = 0;
+      for (k = 0; k < sizeof(a->m) / sizeof(a->m[0]); k++) {
+        tmp->m[i][j] += a->m[k][j] * b->m[i][k];
+      }
+    }
+  }
+  copy_matrix(tmp, b);
+  free_matrix(tmp);
 }
 
 void matrix_multr(struct matrix *a, struct matrix *b) {
-	matrix_multrh(a, b, 0, 0, a->lastcol, b->lastcol);
+  matrix_multrh(a, b, 0, 0, a->lastcol, b->lastcol);
 }
 
 void matrix_multrh(struct matrix *a, struct matrix *b, int a_start, int b_start,
                    int a_end, int b_end) {
-	if(a_start + 2 >= a_end && b_start + 2 >= b_end) {
-		matrix_multrh(a, b, 0, 0, a_end / 2, b_end / 2);
-		matrix_multrh(a, b, a_end / 2 + 1, b_end / 2 + 1, a_end, b_end);
-	}
+  if (a_start + 2 >= a_end && b_start + 2 >= b_end) {
+    matrix_multrh(a, b, 0, 0, a_end / 2, b_end / 2);
+    matrix_multrh(a, b, a_end / 2 + 1, b_end / 2 + 1, a_end, b_end);
+  }
 }
 
 int max(int a, int b) { return a >= b ? a : b; }
+
+void matrix_vals(struct matrix *m, double x[], double y[], double z[]) {
+  int i, j;
+  for (i = 0; i < m->rows; i++) {
+    m->m[0][i] = x[i];
+    m->m[1][i] = y[i];
+    m->m[2][i] = z[i];
+  }
+}
+
+void matrix_vals_row(struct matrix *m, int row, double vals[]) {
+  int i;
+  for (i = 0; i < m->rows; i++) {
+    m->m[row][i] = vals[i];
+  }
+}
 
 /*===============================================
   These Functions do not need to be modified
@@ -146,7 +172,6 @@ Reallocates the memory for m->m such that it now has
 newcols number of collumns
 ====================*/
 void grow_matrix(struct matrix *m, int newcols) {
-
   int i;
   for (i = 0; i < m->rows; i++) {
     m->m[i] = realloc(m->m[i], newcols * sizeof(double));
@@ -162,18 +187,9 @@ Returns:
 copy matrix a to matrix b
  */
 void copy_matrix(struct matrix *a, struct matrix *b) {
-
   int r, c;
 
-<<<<<<< HEAD
-  if(b->lastcol < a->lastcol) grow_matrix(b, a->lastcol);
-
-	for (r=0; r < a->rows; r++)
-		for (c=0; c < a->cols; c++)
-			b->m[r][c] = a->m[r][c];
-=======
   for (r = 0; r < a->rows; r++)
     for (c = 0; c < a->cols; c++)
       b->m[r][c] = a->m[r][c];
->>>>>>> ee5357d8c4f26d8e58beb9b7f1ab572c967e8f89
 }

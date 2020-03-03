@@ -1,7 +1,11 @@
 OBJECTS= main.o draw.o display.o matrix.o
 CFLAGS= -Wall
 LDFLAGS= -lm
-CC= gcc
+ifeq ($(DEBUG), true)
+	CC = gcc -g
+else
+	CC = gcc
+endif
 
 run: all
 	./main
@@ -22,4 +26,4 @@ matrix.o: matrix.c matrix.h
 	$(CC) $(CFLAGS) -c matrix.c
 
 clean:
-	rm *.o *~
+	rm *.o *~ main
