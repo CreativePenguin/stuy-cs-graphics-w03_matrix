@@ -69,14 +69,14 @@ multiply a by b, modifying b to be the product
 a*b -> b
 */
 void matrix_mult(struct matrix *a, struct matrix *b) {
-  int i, j, k, max_col;
+  int i, j, max_col;
   /* max_col = max(a->lastcol, b->lastcol); */
-  struct matrix *tmp;
+  struct matrix *tmp = malloc(sizeof(struct matrix));
   copy_matrix(b, tmp);
   for (i = 0; i < b->rows; i++) {
     for (j = 0; j < 4; j++) {
-      b[i][j] = (a[0][j] * tmp[i][0] + a[1][j] * tmp[i][1] +
-                 a[2][j] * tmp[i][2] + a[3][j] * tmp[i][3]);
+      b->m[i][j] = (a->m[0][j] * tmp->m[i][0] + a->m[1][j] * tmp->m[i][1] +
+                    a->m[2][j] * tmp->m[i][2] + a->m[3][j] * tmp->m[i][3]);
     }
   }
   free_matrix(tmp);
