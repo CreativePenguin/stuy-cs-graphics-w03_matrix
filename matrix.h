@@ -1,5 +1,6 @@
 #ifndef MATRIX_H
 #define MATRIX_H
+#include <stdlib.h>
 
 struct matrix {
   double **m;
@@ -23,6 +24,6 @@ void matrix_multrh(struct matrix *a, struct matrix *b, int a_start, int b_start,
                    int a_end, int b_end);
 int max(int a, int b);
 void matrix_vals(struct matrix *m, double x[], double y[], double z[]);
-void matrix_vals_row(struct matrix *m, int row, double vals[]);
+void matrix_vals_row(struct matrix *m, int row, double vals[], size_t vals_len);
 
 #endif

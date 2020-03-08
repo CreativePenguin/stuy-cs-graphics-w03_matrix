@@ -127,3 +127,6 @@ local.properties
 # End of https://www.gitignore.io/api/eclipse
 
 main
+.vscode/
+*.ppm
+*.png

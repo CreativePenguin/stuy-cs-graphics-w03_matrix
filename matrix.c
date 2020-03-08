@@ -11,7 +11,6 @@
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "matrix.h"
 
@@ -69,14 +68,14 @@ multiply a by b, modifying b to be the product
 a*b -> b
 */
 void matrix_mult(struct matrix *a, struct matrix *b) {
-  int i, j, max_col;
+  int i, j;
   /* max_col = max(a->lastcol, b->lastcol); */
-  struct matrix *tmp = malloc(sizeof(struct matrix));
+  struct matrix *tmp = new_matrix(b->rows, b->lastcol);
   copy_matrix(b, tmp);
   for (i = 0; i < b->rows; i++) {
     for (j = 0; j < 4; j++) {
-      b->m[i][j] = (a->m[0][j] * tmp->m[i][0] + a->m[1][j] * tmp->m[i][1] +
-                    a->m[2][j] * tmp->m[i][2] + a->m[3][j] * tmp->m[i][3]);
+      b->m[i][j] = (a->m[j][0] * tmp->m[0][j] + a->m[j][1] * tmp->m[1][j] +
+                    a->m[j][2] * tmp->m[2][j] + a->m[j][3] * tmp->m[3][j]);
     }
   }
   free_matrix(tmp);
@@ -96,20 +95,33 @@ void matrix_multrh(struct matrix *a, struct matrix *b, int a_start, int b_start,
 
 int max(int a, int b) { return a >= b ? a : b; }
 
-void matrix_vals(struct matrix *m, double x[], double y[], double z[]) {
-  int i, j;
-  for (i = 0; i < m->rows; i++) {
-    m->m[0][i] = x[i];
-    m->m[1][i] = y[i];
-    m->m[2][i] = z[i];
-  }
-}
+// void matrix_vals(struct matrix *m, double x[], double y[], double z[]) {
+//   int i, j;
+//   for (i = 0; i < m->rows; i++) {
+//     m->m[0][i] = x[i];
+//     m->m[1][i] = y[i];
+//     m->m[2][i] = z[i];
+//   }
+// }
 
-void matrix_vals_row(struct matrix *m, int row, double vals[]) {
+/*-----void matrix_vals_row()-----------
+  Inputs: struct matrix *m
+  int row
+  double vals[]
+  size_t vals_len length of vals array
+  Returns:
+  Allows you to change a row of the array
+  Will erase what is currently in that row, and replace it
+*/
+void matrix_vals_row(struct matrix *m, int row, double vals[],
+                     size_t vals_len) {
   int i;
-  for (i = 0; i < m->rows; i++) {
+  if (vals_len > m->lastcol)
+    grow_matrix(m, vals_len);
+  for (i = 0; i < vals_len; i++) {
     m->m[row][i] = vals[i];
   }
+  m->lastcol = vals_len;
 }
 
 /*===============================================

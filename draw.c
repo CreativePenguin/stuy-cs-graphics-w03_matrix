@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ml6.h"
 #include "display.h"
 #include "draw.h"
 #include "matrix.h"
+#include "ml6.h"
 
 /*======== void add_point() ==========
  Inputs:   struct matrix * points
@@ -16,14 +16,14 @@
  if points is full, should call grow on points
  ====================*/
 void add_point(struct matrix *points, double x, double y, double z) {
-	int i, lenmatrix;
-	lenmatrix = points->lastcol;
-	if (lenmatrix == points->cols)
-		grow_matrix(points, 5);
-	points->m[0][lenmatrix] = x;
-	points->m[1][lenmatrix] = y;
-	points->m[2][lenmatrix] = z;
-	points->lastcol++;
+  if (points->lastcol == points->cols) {
+    grow_matrix(points, points->cols + 5);
+    // printf("expanding matrix\n");
+  }
+  points->m[0][points->lastcol] = x;
+  points->m[1][points->lastcol] = y;
+  points->m[2][points->lastcol] = z;
+  points->lastcol++;
 }
 
 /*======== void add_edge() ==========
@@ -35,7 +35,8 @@ void add_point(struct matrix *points, double x, double y, double z) {
  ====================*/
 void add_edge(struct matrix *points, double x0, double y0, double z0, double x1,
               double y1, double z1) {
-
+  add_point(points, x0, y0, z0);
+  add_point(points, x1, y1, z1);
 }
 
 /*======== void draw_lines() ==========
@@ -48,100 +49,105 @@ void add_edge(struct matrix *points, double x0, double y0, double z0, double x1,
  ====================*/
 void draw_lines(struct matrix *points, screen s, color c) {
   int i;
-  for(i = 0; i < points->lastcol; i++) {
-    
+  // printf("%d\n", points->lastcol);
+  for (i = 0; i < points->lastcol - 1; i++) {
+    // printf("i %d %f\n", i, points->m[i][0]);
+    // printf("i + 1 %d %f\n", i, points->m[i + 1][0]);
+    draw_line(points->m[0][i], points->m[1][i], points->m[0][i + 1],
+              points->m[1][i + 1], s, c);
+    // printf("%d\n", i);
   }
 }
 
 void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
 
-	int x, y, d, A, B;
-	//swap points if going right -> left
-	int xt, yt;
-	if (x0 > x1) {
-		xt = x0;
-		yt = y0;
-		x0 = x1;
-		y0 = y1;
-		x1 = xt;
-		y1 = yt;
-	}
+  int x, y, d, A, B;
+  // swap points if going right -> left
+  int xt, yt;
+  if (x0 > x1) {
+    xt = x0;
+    yt = y0;
+    x0 = x1;
+    y0 = y1;
+    x1 = xt;
+    y1 = yt;
+  }
 
-	x = x0;
-	y = y0;
-	A = 2 * (y1 - y0);
-	B = -2 * (x1 - x0);
+  x = x0;
+  y = y0;
+  A = 2 * (y1 - y0);
+  B = -2 * (x1 - x0);
 
-	//octants 1 and 8
-	if (abs(x1 - x0) >= abs(y1 - y0)) {
+  // octants 1 and 8
+  if (abs(x1 - x0) >= abs(y1 - y0)) {
 
-		//octant 1
-		if (A > 0) {
+    // octant 1
+    if (A > 0) {
 
-			d = A + B / 2;
-			while (x < x1) {
-				plot(s, c, x, y);
-				if (d > 0) {
-					y += 1;
-					d += B;
-				}
-				x++;
-				d += A;
-			} //end octant 1 while
-			plot(s, c, x1, y1);
-		} //end octant 1
+      d = A + B / 2;
+      while (x < x1) {
+        plot(s, c, x, y);
+        if (d > 0) {
+          y += 1;
+          d += B;
+        }
+        x++;
+        d += A;
+      } // end octant 1 while
+      plot(s, c, x1, y1);
+    } // end octant 1
 
-		//octant 8
-		else {
-			d = A - B / 2;
+    // octant 8
+    else {
+      d = A - B / 2;
 
-			while (x < x1) {
-				//printf("(%d, %d)\n", x, y);
-				plot(s, c, x, y);
-				if (d < 0) {
-					y -= 1;
-					d -= B;
-				}
-				x++;
-				d += A;
-			} //end octant 8 while
-			plot(s, c, x1, y1);
-		} //end octant 8
-	} //end octants 1 and 8
+      while (x < x1) {
+        // printf("(%d, %d)\n", x, y);
+        plot(s, c, x, y);
+        if (d < 0) {
+          y -= 1;
+          d -= B;
+        }
+        x++;
+        d += A;
+      } // end octant 8 while
+      plot(s, c, x1, y1);
+    } // end octant 8
+  }   // end octants 1 and 8
 
-	  //octants 2 and 7
-	else {
+  // octants 2 and 7
+  else {
 
-		//octant 2
-		if (A > 0) {
-			d = A / 2 + B;
+    // octant 2
+    if (A > 0) {
+      d = A / 2 + B;
 
-			while (y < y1) {
-				plot(s, c, x, y);
-				if (d < 0) {
-					x += 1;
-					d += A;
-				}
-				y++;
-				d += B;
-			} //end octant 2 while
-			plot(s, c, x1, y1);
-		} //end octant 2
+      while (y < y1) {
+        plot(s, c, x, y);
+        if (d < 0) {
+          x += 1;
+          d += A;
+        }
+        y++;
+        d += B;
+      } // end octant 2 while
+      plot(s, c, x1, y1);
+    } // end octant 2
 
-		//octant 7
-		else {
-			d = A / 2 - B;
+    // octant 7
+    else {
+      d = A / 2 - B;
 
-			while (y > y1) {
-				plot(s, c, x, y);
-				if (d > 0) {
-					x += 1;
-					d += A;
-				}
-				y--;
-				d -= B;
-			} //end octant 7 while
-			plot(s, c, x1, y1);
-		} //end octant 7
-	} //end octants 2 and 7
-} //end draw_line
+      while (y > y1) {
+        plot(s, c, x, y);
+        if (d > 0) {
+          x += 1;
+          d += A;
+        }
+        y--;
+        d -= B;
+      } // end octant 7 while
+      plot(s, c, x1, y1);
+    } // end octant 7
+  }   // end octants 2 and 7
+} // end draw_line
